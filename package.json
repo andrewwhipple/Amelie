@@ -1,0 +1,20 @@
+{
+  "name": "Amelie",
+  "version": "1.0.0",
+  "description": "A tiny, quirky blog engine made in Node.js",
+  "url": "https://github.com/andrewwhipple/Amelie",
+  "license": "MIT",
+  "repository": {
+	  "type": "git",
+	  "url": "https://github.com/andrewwhipple/Amelie"
+  },
+  "main": "engine.js",
+  "author": "Andrew Whipple",
+  "dependencies": {
+    "express": "^4.13.4",
+    "marked": "^0.3.5",
+    "serve-favicon": "^2.3.0",
+    "http": "*",
+    "es6-promise": "*"
+  }
+}

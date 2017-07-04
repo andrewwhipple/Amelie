@@ -1,0 +1,115 @@
+a, a:visited, a:active {
+    color: blue;
+}
+
+a:hover {
+    color: #000;
+}
+
+body {
+    background-color: #FFF;
+    text-size-adjust: auto;
+    font-family: sans-serif;
+}
+
+p, li {
+    font-size: 1.2em;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3%;
+    margin-top: 3%;
+    width: 100%;
+    height: 100%;
+    max-width: 40em;
+}
+
+.am-header {
+    background-color: gray;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 768px) {
+    .am-header {
+        margin-left: -15%;
+        margin-right: -15%;
+    }
+}
+
+@media (min-width: 1500px) {
+    .am-header {
+        margin-left: -50%;
+        margin-right: -50%;
+    }
+}
+
+.am-header-content {
+    display: block;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    max-width: 55em;
+    margin-left: auto;
+    margin-right: auto;
+    color: #FFF;
+}
+
+.am-header-content a:hover {
+    color: #FFF;
+}
+
+.am-navbar a {
+    color: #FFF;
+}
+
+a.am-header-title-no-highlight {
+    color: #FFF;
+}
+
+.am-body {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+.am-post-title a {
+    text-decoration: none;
+    color: #000;
+}
+
+.am-post-title a:hover, .am-post-title a:visited {
+    color: blue;
+}
+
+.am-linkpost-pub-date, .am-post-pub-date {
+    color: gray;
+}
+
+.am-post, .am-linkpost, .am-page {
+    border-bottom: 1px solid gray;
+    padding-bottom: 2%;
+    padding-left: 3%;
+    padding-right: 3%;
+    max-width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.am-footer-text {
+    color: gray;
+    text-align: center;
+}
+
+.am-footer {
+    padding-top: 2%;
+}
+
+
+
+
+
