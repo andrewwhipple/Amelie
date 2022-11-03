@@ -5,16 +5,18 @@
   "url": "https://github.com/andrewwhipple/Amelie",
   "license": "MIT",
   "repository": {
-	  "type": "git",
-	  "url": "https://github.com/andrewwhipple/Amelie"
+    "type": "git",
+    "url": "https://github.com/andrewwhipple/Amelie"
   },
   "main": "engine.js",
   "author": "Andrew Whipple",
   "dependencies": {
+    "es6-promise": "*",
     "express": "^4.13.4",
-    "marked": "^0.3.5",
-    "serve-favicon": "^2.3.0",
     "http": "*",
-    "es6-promise": "*"
+    "jstransformer-markdown-it": "^3.0.0",
+    "marked": "^0.3.5",
+    "pug": "^3.0.2",
+    "serve-favicon": "^2.3.0"
   }
 }

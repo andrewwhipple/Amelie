@@ -237,7 +237,7 @@ To create a new blog posts, first create a new markdown file (ex: `mypost.md`.) 
 
 Start every post with metadata of the following form:
 
-`@@: "Title": "PostTitle", "Date": "PostDate", "LinkPost": bool, "Link": "Link", "Permalink": "PostPermalink" :@@`
+`@@: "title": "PostTitle", "date": "PostDate", "linkPost": bool, "link": "Link", "permalink": "PostPermalink" :@@`
 
 This blog uses the concept of a "link post", which is a term for the kind of short posts that are primarily to link out to another piece of content you find interesting. This contrasts with posts that are entirely your own. The two are rendered slightly differently:
 
@@ -250,11 +250,11 @@ Basically, it's a way to share other people's content without being a jerk.
 
 Anyway, this concept of a link post is baked into Amelie, so now that you understand that, here's an explanation of the fields in the metadata section:
 
-* Title: A string for the title for your blog post!
-* Date: A *string* for the date you're posting the blog post, in human-readable form. This is not used for anything in code, but is rendered on the post page, so it's purely for aesthetic/informational purposes.
-* LinkPost: A bool to flag whether this post is a link post.
-* Link: A url string to the link you want in the title of the post. Conventionally, if you're making an original post, this should be the link to where the post lives on your site, whereas if it's a link post, this should link out to the *external* source you're referencing. 
-* Permalink: Optional parameter if "LinkPost" is false (aka if it's an original piece.) If it is a link post, then this is where you put the permalink to your actual blog post.
+* `title`: A string for the title for your blog post!
+* `date`: A *string* for the date you're posting the blog post, in human-readable form. This is not used for anything in code, but is rendered on the post page, so it's purely for aesthetic/informational purposes.
+* `linkPost`: A bool to flag whether this post is a link post.
+* `link`: A url string to the link you want in the title of the post. Conventionally, if you're making an original post, this should be the link to where the post lives on your site, whereas if it's a link post, this should link out to the *external* source you're referencing. 
+* `permalink`: Optional parameter if "LinkPost" is false (aka if it's an original piece.) If it is a link post, then this is where you put the permalink to your actual blog post.
 
 Eagle-eyed viewers may notice that the metadata section is just JSON, but with `@@:` and `:@@` instead of curly braces. Yep. I just chose different symbols for easier parsing, because they were things that would never show up in a reasonable blog post (unlike curly braces!)
 
@@ -268,17 +268,16 @@ But for a normal post, you want it on your blogroll, so you need to publish it. 
 
 But for now, the way you publish a post to be indexed by blogrolls is by adding it to `postList.json`, which is a file that lives at the top of the `blog` folder.
 
-This file is a JSON object containing a single array called `posts`. To publish a post, edit this file and add to the array the string with the filepath to the post in question, using the format `"YYYY/MM/DD/post.md"`.
+This file is a JSON object containing a single array called `posts`. To publish a post, edit this file and add to the array the string with the filepath to the post in question, using the format `"blog/YYYY/MM/DD/post.md"`.
 
 As an example, if there was a new post I was writing with the filename "carlyslayjepsen.md" that lived in the `blog/2017/11/21` folder, what I would add to `postList.json` is:
 
-`"2017/11/21/carlyslayjepsen.md"`
+`"blog/2017/11/21/carlyslayjepsen.md"`
 
 As a trick, remember when writing a post it asks you for the "Link"? Well the link to this post would be "/blog/2017/11/21/carlyslayjepsen". So to go from writing a post to publishing it, you can:
 
 * Use the "Link" parameter from the post,
 * Add ".md" to the end
-* Remove "/blog/" from the beginning.
 
 There are lots of reasons why this is a Bad System. And one of the key ones is it is *very finicky.* If the filepath is wrong by even one character, it can crash the app. If you forget a semicolon in adding the filepath to the array, it can crash. If you forget to make it a string, the app can crash. It's bad bad bad bad and should be killed with fire.
 
@@ -298,19 +297,16 @@ This site, as it stands, uses [Twitter Bootstrap](http://getbootstrap.com) for t
 
 ### HTML Templates
 
-There are three templates that are used in this site, and they all live in the `views` folder:
+As of version 2, Amelie uses [Pug](https://pugjs.org/) as its rendering engine of choice.
 
-* index.spoon: This is the base structure of every page on the site. It contains the shared head tag, shared header, shared footer, and the structure for everything surrounding the actual post content.
-* postTemplate.spoon: This is the template for original content posts (as well as static pages)
-* linkPostTemplate.spoon: This is identical to postTemplate, but contains extra formatting for link posts (described above.)
+Templates for the site are in the `views` folder:
 
-They are all `.spoon` files, which is the dumb extension for my own template engine I hacked together in `engine.js` because I couldn't get [Handlebars](http://handlebarsjs.com) working correctly. It's literally just HTML, but with some specific things templated in (surrounded in double braces, like `{{this}}`). 
+* `index.pug`: This is the base structure of every page on the site. It contains the shared head tag, shared header, shared footer, and the structure for everything surrounding the actual post content.
+* `mixins.pug`: This contains two pug [mixins](https://pugjs.org/language/mixins.html) for rendering the content of an individual post or link post within a page or blogroll.
 
-Only the things currently listed in the .spoon files in double braces are currently replaceable by the Spoon engine, so it's like Handlebars but demonstrably less useful. 
+Edit these views to your hearts content, but be careful to do so in close consideration with `engine.js` lest there's some code that expects something to be in the document.
 
-In any case, edit these views to your hearts content, but be careful to do so in close consideration with `engine.js` lest there's some code that expects something to be in the document.
-
-Also, if you want to add analytics or ad code, `index.spoon` is the place to do that! There's even a helpful `<div>` in the footer for an `am-ad` class, if you want to use it.
+Also, if you want to add analytics or ad code, `index.pug` is the place to do that! There's even a helpful `div` in the footer for an `am-ad` class, if you want to use it.
  
 ### Favicon
 
@@ -345,6 +341,11 @@ Anyway, that's Amelie. Below is some information that may not be of any use to a
 ## Changelog:
 
 1.0.0: Initial commit of the current working version!
+2.0.0:
+* Replaced handwritten template engine with [Pug](https://pugjs.org/)
+* Changed `postList.json` format from `YYYY/MM/DD/filename.md` to `blog/YYYY/MM/DD/filename.md`
+* Changed metadata keys in post markdown headers from `TitleCase` to `camelCase`
+* Added more example pages to the sample and setup script
 
 ## Sites Powered By Amelie
 * [andrewwhipple.com](https://andrewwhipple.com)

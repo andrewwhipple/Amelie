@@ -1,11 +1,11 @@
 //Requires
-var express = require('express');
-var app = express();
-var fs = require('fs');
-var marked = require('marked');
-var favicon = require('serve-favicon');
-var http = require('http');
-var Promise = require('es6-promise').Promise;
+let express = require('express');
+let app = express();
+let fs = require('fs');
+let marked = require('marked');
+let favicon = require('serve-favicon');
+let http = require('http');
+let Promise = require('es6-promise').Promise;
 
 Promise.polyfill();
 
@@ -22,7 +22,7 @@ function readFilePromise(fileName) {
 }
 
 //A wrapper for all the relevant global vars
-var globalVars = {
+let globalVars = {
     //Info relating to the final, surfaced web site.
     siteConfig: {
         "description": "",
@@ -47,27 +47,14 @@ var globalVars = {
 //Favicon loading
 app.use(favicon(__dirname + '/favicon.ico'));
 
-//The spoon templating engine. It's silly. It's unnecessary. I couldn't get Handlebars working.
-app.engine('spoon', function(filePath, options, callback) {
-    fs.readFile(filePath, function(err, content) {
-        if (err) {
-            return callback(new Error(err));
-        }
-        var rendered = "";
-        var now = new Date();
-        rendered = content.toString().replace('{{title}}', options.title).replace('{{siteTitle}}', globalVars.siteConfig.defaultTitle).replace('{{body}}', options.body).replace("{{meta-description}}", globalVars.siteConfig.metaDescription).replace("{{meta-keywords}}", globalVars.siteConfig.metaKeywords).replace("{{meta-author}}", globalVars.siteConfig.metaAuthor).replace("{{description}}", globalVars.siteConfig.description).replace("{{navbar}}", globalVars.siteConfig.navbar).replace("{{copyrightYear}}", now.getFullYear());
-        
-        return callback(null, rendered);
-    });
-});
 
 //Setting the views directory and the view engine
 app.set('views', './views');
-app.set('view engine', 'spoon');
+app.set('view engine', 'pug');
 
 //Load the post templates into memory.
 function loadTemplates() {
-	var templates = ["./views/postTemplate.spoon", "./views/linkPostTemplate.spoon"].map(readFilePromise);
+	let templates = ["./views/postTemplate.spoon", "./views/linkPostTemplate.spoon"].map(readFilePromise);
 
 	Promise.all(templates).then(function(files) {
 		globalVars.siteConfig.postTemplate = files[0].toString();
@@ -80,8 +67,8 @@ function loadTemplates() {
 //Load the configuration files into memory.
 function loadConfigs() {
 
-    var configs = ["description.md", "navbar.md", "app-config.json", "site-config.json"];
-	for (var i = 0; i < configs.length; i++) {
+    let configs = ["description.md", "navbar.md", "app-config.json", "site-config.json"];
+	for (let i = 0; i < configs.length; i++) {
 		configs[i] = globalVars.appConfig.filePath + '/config/' + configs[i];
 	}
 	configs = configs.map(readFilePromise);
@@ -92,14 +79,17 @@ function loadConfigs() {
 			globalVars.siteConfig.description = marked(files[0].toString());
 			globalVars.siteConfig.navbar = marked(files[1].toString());
 			
-			var appConfig = JSON.parse(files[2]);
-			var siteConfig = JSON.parse(files[3]);
+			let appConfig = JSON.parse(files[2]);
+			let siteConfig = JSON.parse(files[3]);
 			
 			//If the siteConfig info is mal-formed or nonexistent, will pass it through without question
 		    globalVars.siteConfig.metaDescription = siteConfig.metaDescription;
 		    globalVars.siteConfig.metaAuthor = siteConfig.metaAuthor;
 		    globalVars.siteConfig.metaKeywords = siteConfig.metaKeywords;
 		    globalVars.siteConfig.defaultTitle = siteConfig.defaultTitle;
+
+			now = new Date();
+			globalVars.siteConfig.currentYear = now.getFullYear();
     
 			//If the appConfig info is mal-formed or nonexistent, will revert to the defaults
 		    globalVars.appConfig.configTTL = appConfig.configTTL || globalVars.appConfig.configTTL;
@@ -128,6 +118,7 @@ function configDataIsExpired() {
 	return Date.now() - globalVars.appConfig.lastPulled > globalVars.appConfig.configTTL;
 }
 
+
 /*
 Function that, given a response object from an app.get() call, the number of posts to render
 	(or null if you want all possible posts) and a substring to search for (again, or null if you
@@ -144,38 +135,50 @@ function getBlogroll(res, numPosts, searchString) {
 			console.log(err);
 			return;
 		} 
-		var postList = JSON.parse(content);
+		let postList = JSON.parse(content);
+
 		//Ordering is by date, most recent first, and reverse alphabetical if multiple on one day.
 		postList.posts.sort();
 		postList.posts.reverse();
-		var blogRollHTML = "";
-		
-		var blogRollPosts = [];
 	
-		//If either are null, sets them to defaults that allows them to be ignored. 
 		searchString = searchString || "";
 		numPosts = numPosts || postList.posts.length;
 
-		
-		for (var i = 0; i < numPosts; i++) {
+		let blogRollPostFiles = [];
+
+		for (let i = 0; i < numPosts; i++) {
 			if (i < postList.posts.length && postList.posts[i].toString().indexOf(searchString) !== -1) {
-				blogRollPosts.push(globalVars.appConfig.filePath + '/blog/' + postList.posts[i]);
+				blogRollPostFiles.push(globalVars.appConfig.filePath + '/' + postList.posts[i]);
 			} 
 		}
+
+		blogRollPostFiles = blogRollPostFiles.map(readFilePromise);	
+
+		let blogRollPosts = [];		
 		
-		blogRollPosts = blogRollPosts.map(readFilePromise);	
-		
-		Promise.all(blogRollPosts).then(function(posts) {
-			
-			for (var j = 0; j < posts.length; j++) {
-				blogRollHTML += getHTMLFromMarkdown(posts[j].toString(), true).html;
-				blogRollHTML += "<br>";
+		Promise.all(blogRollPostFiles).then(function(posts) {
+			for (let j = 0; j < posts.length; j++) {
+				postData = getDataFromMarkdown(posts[j].toString());
+				blogRollPosts.push(postData);
 			}
-			
-			blogRollHTML += ' <div class="am-post"><a href="/archive"><h4>(More posts ➡)</h5></a></div>'
         	
+			now = new Date();
+			currentYear = now.getFullYear();
+
 			res.set('Cache-Control', 'public, max-age=' + globalVars.appConfig.cacheMaxAge);
-			res.render('index', {body: blogRollHTML, title: globalVars.siteConfig.defaultTitle});
+
+			res.render('index', {
+				metaDescription: globalVars.siteConfig.metaDescription,
+				metaKeywords: globalVars.siteConfig.metaKeywords,
+				metaAuthor: globalVars.siteConfig.metaAuthor,
+				title: globalVars.siteConfig.defaultTitle,
+				siteTitle: globalVars.siteConfig.defaultTitle,
+				navbar: globalVars.siteConfig.navbar,
+				description: globalVars.siteConfig.description,
+				readMore: true,
+				posts: blogRollPosts,
+				copyrightYear: globalVars.siteConfig.currentYear
+			});
 	
 		}).catch(function(err) {
 			console.log(err);
@@ -214,63 +217,53 @@ function getPageMarkdown(page, callback) {
 
 //Helper function to pull the metadata out of a given markdown string and return it as JSON object
 function parseMetaData(markdown) {
-    var metaDataRaw = markdown.match(/@@:.*:@@/)[0];     
-    var metaDataClean = metaDataRaw.replace("@@:", "{").replace(":@@", "}");
+    let metaDataRaw = markdown.match(/@@:.*:@@/)[0];     
+    let metaDataClean = metaDataRaw.replace("@@:", "{").replace(":@@", "}");
     return JSON.parse(metaDataClean);
 }
 
-/*
-Function that, given a markdown string from a file and a boolean flag on whether the page being rendered
-	is a post, returns an object with the document's HTML in a string and the title to render
-	for the page
-*/
-function getHTMLFromMarkdown(markdown, isPost) {
-    var metaData = parseMetaData(markdown);
-	var documentHTML;
-	var contentHTML = marked(markdown.replace(/@@:.*:@@/, ""));
-	if (isPost) {
-		if (metaData.LinkPost) {
-			documentHTML = globalVars.siteConfig.linkPostTemplate;
-			documentHTML = documentHTML.replace("{{permalink}}", metaData.Permalink);
-		} else {
-			documentHTML = globalVars.siteConfig.postTemplate;		
-		}
-		
-		documentHTML = documentHTML.replace("{{title}}", metaData.Title).replace("{{link}}", metaData.Link).replace("{{date}}", metaData.Date);
-		documentHTML = documentHTML.replace("{{content}}", contentHTML);
-	} else {
-		documentHTML = '<div class="am-page">' + contentHTML + '</div>';
+function getDataFromMarkdown(markdown) {
+	let metadata = parseMetaData(markdown);
+	let content = marked(markdown.replace(/@@:.*:@@/, ""));
+	return {
+		"metadata": metadata,
+		"content": content
 	}
-	
-	return {"html": documentHTML, "title": metaData.Title};
 }
 
 //Route handler for the homepage, responsible for creating the main blogroll
 app.get('/', function(req, res) {
-    
     if (configDataIsExpired()) {
         loadConfigs();
     }    
-   
    	getBlogroll(res, 5, null);
 });
 
 //Route handler for the full, infinite scroll blogroll.
 app.get('/blogroll', function(req, res) {
-    
 	getBlogroll(res, null, null);
 });
 
 //Route handler for individual blog post permalinks
 app.get('/blog/:year/:month/:day/:post/', function(req, res) {
-    var path = "" + req.params.year + "/" + req.params.month + "/" + req.params.day + "/";
+    let path = "" + req.params.year + "/" + req.params.month + "/" + req.params.day + "/";
     getBlogMarkdown(req.params.post, path, function(err, data) {
         if (err) {
             res.redirect('/404');
-        } else {
-            var postBody = getHTMLFromMarkdown(data, true);   
-			res.set('Cache-Control', 'public, max-age=' + globalVars.appConfig.cacheMaxAge);        
-            res.render('index', {title: postBody.title, body: postBody.html});
+        } else { 
+			let post = getDataFromMarkdown(data);
+			res.set('Cache-Control', 'public, max-age=' + globalVars.appConfig.cacheMaxAge); 
+			res.render('index', {
+				metaDescription: globalVars.siteConfig.metaDescription,
+				metaKeywords: globalVars.siteConfig.metaKeywords,
+				metaAuthor: globalVars.siteConfig.metaAuthor,
+				siteTitle: globalVars.siteConfig.defaultTitle,
+				navbar: globalVars.siteConfig.navbar,
+				description: globalVars.siteConfig.description,
+				copyrightYear: globalVars.siteConfig.currentYear,
+				title: post.metadata.title,
+				posts: [post]
+			});
         }
     }); 
 });
@@ -281,8 +274,7 @@ app.get('/blog/:year/:month/', function(req, res) {
         if (err) {
             return callback(new Error(err));
         } 
-        var dateString = req.params.year + "/" + req.params.month + "/";
-         
+        let dateString = req.params.year + "/" + req.params.month + "/";
         getBlogroll(res, null, dateString);
     });
 });
@@ -293,10 +285,19 @@ app.get('/:page', function(req, res) {
         if (err) {
             res.redirect('/404');
         } else {
-            var pageHTML = getHTMLFromMarkdown(data, false);
-            
+			let page = getDataFromMarkdown(data);
 			res.set('Cache-Control', 'public, max-age=' + globalVars.appConfig.cacheMaxAge);
-			res.render('index', {title: pageHTML.title, body: pageHTML.html});
+			res.render('index', {
+				metaDescription: globalVars.siteConfig.metaDescription,
+				metaKeywords: globalVars.siteConfig.metaKeywords,
+				metaAuthor: globalVars.siteConfig.metaAuthor,
+				siteTitle: globalVars.siteConfig.defaultTitle,
+				navbar: globalVars.siteConfig.navbar,
+				description: globalVars.siteConfig.description,
+				copyrightYear: globalVars.siteConfig.currentYear,
+				title: page.metadata.title,
+				page: page.content
+			});
         }
     })
 });
