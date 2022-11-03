@@ -30,9 +30,7 @@ let globalVars = {
         "metaDescription": "",
         "metaKeywords": "",
         "metaAuthor": "",
-        "defaultTitle": "",
-		"postTemplate": "",
-		"linkPostTemplate": ""
+        "defaultTitle": ""
     },
     //Info relating to the running of the app code
     "appConfig": {
@@ -51,18 +49,6 @@ app.use(favicon(__dirname + '/favicon.ico'));
 //Setting the views directory and the view engine
 app.set('views', './views');
 app.set('view engine', 'pug');
-
-//Load the post templates into memory.
-function loadTemplates() {
-	let templates = ["./views/postTemplate.spoon", "./views/linkPostTemplate.spoon"].map(readFilePromise);
-
-	Promise.all(templates).then(function(files) {
-		globalVars.siteConfig.postTemplate = files[0].toString();
-		globalVars.siteConfig.linkPostTemplate = files[1].toString();
-	}).catch(function(err){
-		console.log(err);
-	});
-}
 
 //Load the configuration files into memory.
 function loadConfigs() {
@@ -104,7 +90,6 @@ function loadConfigs() {
 }
 
 loadConfigs();
-loadTemplates();
 
 //Handle the static files
 app.use(express.static(globalVars.appConfig.filePath + '/static'));
@@ -129,7 +114,6 @@ Ex: I want the last 5 posts, I'd call getBlogroll(res, 5, null)
 Ex: I want only posts from march 2016, I'd call getBlogroll(res, null, "2016/03")
 */
 function getBlogroll(res, numPosts, searchString) {
-	
 	fs.readFile(globalVars.appConfig.filePath + '/blog/postList.json', function(err, content) {
         if (err) {
 			console.log(err);
@@ -215,15 +199,11 @@ function getPageMarkdown(page, callback) {
     });
 };
 
-//Helper function to pull the metadata out of a given markdown string and return it as JSON object
-function parseMetaData(markdown) {
-    let metaDataRaw = markdown.match(/@@:.*:@@/)[0];     
-    let metaDataClean = metaDataRaw.replace("@@:", "{").replace(":@@", "}");
-    return JSON.parse(metaDataClean);
-}
-
 function getDataFromMarkdown(markdown) {
-	let metadata = parseMetaData(markdown);
+	let metadataRaw = markdown.match(/@@:.*:@@/)[0];     
+    let metadataJSONString = metadataRaw.replace("@@:", "{").replace(":@@", "}");
+    let metadata = JSON.parse(metadataJSONString);
+
 	let content = marked(markdown.replace(/@@:.*:@@/, ""));
 	return {
 		"metadata": metadata,
@@ -311,4 +291,3 @@ app.get('/*', function(req, res) {
 
 //Creates the server
 http.createServer(app).listen(globalVars.appConfig.port);
-
