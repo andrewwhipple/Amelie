@@ -29,7 +29,7 @@ cd ../
 mkdir 02
 cd 02
 touch a-link-post.md
-echo '@@: "title": "Hello World!", "link": "https://www.youtube.com/watch?v=mCuBjMNlnVs", "date": "1/2/2017", "linkPost": true, "permalink": "blog/2017/01/01/a-link-post" :@@ An example link post'> a-link-post.md
+echo '@@: "title": "Hello World!", "link": "https://www.youtube.com/watch?v=mCuBjMNlnVs", "date": "1/2/2017", "linkPost": true, "permalink": "blog/2017/01/02/a-link-post" :@@ An example link post'> a-link-post.md
 cd ../../../
 cd ../config
 touch app-config.json
