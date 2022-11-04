@@ -341,6 +341,7 @@ Anyway, that's Amelie. Below is some information that may not be of any use to a
 ## Changelog:
 
 1.0.0: Initial commit of the current working version!
+
 2.0.0:
 * Replaced handwritten template engine with [Pug](https://pugjs.org/)
 * Changed `postList.json` format from `YYYY/MM/DD/filename.md` to `blog/YYYY/MM/DD/filename.md`
