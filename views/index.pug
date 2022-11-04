@@ -1,0 +1,43 @@
+include mixins
+doctype html 
+html 
+    head 
+        meta(charset="UTF-8")
+        meta(name="description" content= metaDescription)
+        meta(name="keywords" content= metaKeywords)
+        meta(name="author" content= metaAuthor)
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        link(href="/css/bootstrap.min.css" rel="stylesheet" type="text/css")
+        link(href="/css/theme.css" rel="stylesheet" type="text/css")
+        script(src="/scripts/jquery-1.12.2.min.js")
+        script(src="/scripts/bootstrap.min.js")
+        title #{title}
+    body 
+        div(class="am-body container")
+            div(class="am-header")
+                div(class="am-header-content")    
+                    h1(class="am-header-title") 
+                        a(class="am-header-title-no-highlight" href="/") #{siteTitle}
+                    p(class="am-header-description") !{description}
+                    div(class="am-navbar")
+                        h4 !{navbar}
+                            
+            div
+                div(class="am-body-content")
+                    if page 
+                        div(class="am-page") !{page}
+                    else 
+                        for post in posts ? posts : []
+                            if post.metadata.linkPost
+                                +linkPost(post)
+                            else
+                                +post(post)
+                        if readMore 
+                            div(class="am-post")
+                                a(href="/archive")
+                                    h4 (More posts ➡)
+            div
+                div(class="am-footer")
+                    div(class="am-footer-ad")
+                        // your ad code goes here
+                    p(class="am-footer-text") © #{copyrightYear}
