@@ -1,6 +1,6 @@
 {
   "name": "Amelie",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A tiny, quirky blog engine made in Node.js",
   "url": "https://github.com/andrewwhipple/Amelie",
   "license": "MIT",
@@ -18,5 +18,8 @@
     "marked": "^0.3.5",
     "pug": "^3.0.2",
     "serve-favicon": "^2.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.26.0"
   }
 }
