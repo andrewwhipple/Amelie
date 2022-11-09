@@ -1,6 +1,6 @@
 {
   "name": "Amelie",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A tiny, quirky blog engine made in Node.js",
   "url": "https://github.com/andrewwhipple/Amelie",
   "license": "MIT",
