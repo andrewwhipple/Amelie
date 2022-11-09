@@ -348,6 +348,10 @@ Anyway, that's Amelie. Below is some information that may not be of any use to a
 * Changed metadata keys in post markdown headers from `TitleCase` to `camelCase`
 * Added more example pages to the sample and setup script
 
+2.0.1:
+* Added eslint
+* Miscellaneous code cleanup
+
 ## Sites Powered By Amelie
 * [andrewwhipple.com](https://andrewwhipple.com)
 
