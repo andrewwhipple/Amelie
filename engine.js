@@ -229,9 +229,9 @@ app.get('/blog/:year/:month/:day/:post/', function(req, res) {
 
             res.set('Cache-Control', 'public, max-age=' + settings.appConfig.cacheMaxAge);
             res.render('index', {
-                metaDescription: settings.siteConfig.metaDescription,
-                metaKeywords: settings.siteConfig.metaKeywords,
-                metaAuthor: settings.siteConfig.metaAuthor,
+                metaDescription: post.metadata.metaDescription || settings.siteConfig.metaDescription,
+                metaKeywords: post.metadata.metaKeywords || settings.siteConfig.metaKeywords,
+                metaAuthor: post.metadata.metaAuthor || settings.siteConfig.metaAuthor,
                 siteTitle: settings.siteConfig.defaultTitle,
                 navbar: settings.siteConfig.navbar,
                 description: settings.siteConfig.description,
@@ -260,9 +260,9 @@ app.get('/:page', function(req, res) {
 
             res.set('Cache-Control', 'public, max-age=' + settings.appConfig.cacheMaxAge);
             res.render('index', {
-                metaDescription: settings.siteConfig.metaDescription,
-                metaKeywords: settings.siteConfig.metaKeywords,
-                metaAuthor: settings.siteConfig.metaAuthor,
+                metaDescription: page.metadata.metaDescription || settings.siteConfig.metaDescription,
+                metaKeywords: page.metadata.metaKeywords || settings.siteConfig.metaKeywords,
+                metaAuthor: page.metadata.metaAuthor || settings.siteConfig.metaAuthor,
                 siteTitle: settings.siteConfig.defaultTitle,
                 navbar: settings.siteConfig.navbar,
                 description: settings.siteConfig.description,
