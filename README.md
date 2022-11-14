@@ -256,6 +256,14 @@ Anyway, this concept of a link post is baked into Amelie, so now that you unders
 * `link`: A url string to the link you want in the title of the post. Conventionally, if you're making an original post, this should be the link to where the post lives on your site, whereas if it's a link post, this should link out to the *external* source you're referencing. 
 * `permalink`: Optional parameter if "LinkPost" is false (aka if it's an original piece.) If it is a link post, then this is where you put the permalink to your actual blog post.
 
+Additionally, you can optionally specify what will go in the meta tags on a per-post or per-page with the following fields:
+
+* `metaDescription`: A string for the `description` tag
+* `metaKeywords`: A string for the `keywords` tag (must be a string, not an array of strings)
+* `metaAuthor`: A string for the `author` tag
+
+If those are not set in the post/page metadata, then by default they'll be populated with the site-wide values set in `config/site-config.json` 
+
 Eagle-eyed viewers may notice that the metadata section is just JSON, but with `@@:` and `:@@` instead of curly braces. Yep. I just chose different symbols for easier parsing, because they were things that would never show up in a reasonable blog post (unlike curly braces!)
 
 ## Publishing A Post
@@ -327,6 +335,7 @@ Anyway, that's Amelie. Below is some information that may not be of any use to a
 * Creates a full blogroll of every post ever at "/blogroll"
 * Creates a blogroll for each month at "/blog/YYYY/MM"
 * Allows editing of header content and meta information without a deploy
+* Allows blog posts and static pages to serve their own meta information
 * Allows custom 404 pages
 * Allows serving of arbitrary files in the `static` folder.
 
@@ -335,7 +344,6 @@ Anyway, that's Amelie. Below is some information that may not be of any use to a
 * Replace postList.json with a lower-cermony and less error-prone method of post publishing.
 * Implement RSS feeds (in both XML and JSON.)
 * Server-side caching
-* Allowing blog posts and static pages to serve their own meta information in their `<head>` tags.
 * Implement searching and perhaps tags for posts
 
 ## Changelog:
@@ -351,6 +359,9 @@ Anyway, that's Amelie. Below is some information that may not be of any use to a
 2.0.1:
 * Added eslint
 * Miscellaneous code cleanup
+
+2.1.0:
+* Added support for specifying description, keywords, and author metatext on a per-post basis.
 
 ## Sites Powered By Amelie
 * [andrewwhipple.com](https://andrewwhipple.com)
